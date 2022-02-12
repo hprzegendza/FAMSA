@@ -1,2 +1,2 @@
 exportPattern(famsa)
-    useDynLib(famsa, .registration = TRUE, .fixes = ".")
+useDynLib(famsa, .registration = TRUE, .fixes = ".")
