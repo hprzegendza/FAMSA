@@ -1,6 +1,6 @@
 #' @export
 famsa <- function(stringset = NULL, help = FALSE, verbose = FALSE,
-                  very_verbose = FALSE, tree = FALSE, distance_matrix = FALSE, advanced_settings = "") {
+                  tree = FALSE, distance_matrix = FALSE, advanced_settings = "") {
 
   args <- strsplit(advanced_settings, " ")[[1]]
   argv <- NULL
@@ -14,9 +14,7 @@ famsa <- function(stringset = NULL, help = FALSE, verbose = FALSE,
     }
 
     argv <- append(argv, c("famsa"))
-    if (very_verbose) {
-      argv <- append(argv, c("-vv"))
-    } else if (verbose) {
+    if (verbose) {
       argv <- append(argv, c("-v"))
     }
 
@@ -25,7 +23,7 @@ famsa <- function(stringset = NULL, help = FALSE, verbose = FALSE,
       names(stringset) <- 1:length(stringset)
       temp_out <- tempfile(fileext = ".fasta")
     } else if (tree && distance_matrix) {
-          stop("Both tree and distance matrix have been selected as the output!\nUse help(\"famsa\"), to print instruction.")
+        stop("Both tree and distance matrix have been selected as the output!\nUse help(\"famsa\"), to print instruction.")
     } else if (tree) {
       argv <- append(argv, c("-gt_export"))
       temp_out <- tempfile()
@@ -52,6 +50,8 @@ famsa <- function(stringset = NULL, help = FALSE, verbose = FALSE,
 
 
   nargs <- as.integer(length(argv))
+  ## #' @useDynLib famsa famsaCPP
+  #sda <- function(x, y) .Call(famsaCPP, nargs, as.character(argv))
   .C(.famsaCPP, nargs, as.character(argv))
 
   if (!tree && !distance_matrix) {
