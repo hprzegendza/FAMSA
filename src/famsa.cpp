@@ -15,9 +15,8 @@ Authors: Sebastian Deorowicz, Agnieszka Debudaj-Grabysz, Adam Gudys
 #include "timer.h"
 #include "log.h"
 
-// #include <R.h>
 #include <Rinternals.h>
-// #include <R_ext/Rdynload.h>
+
 #undef min
 #undef max
 
@@ -423,12 +422,12 @@ extern "C" {
     // Register the native code in R.
 
     R_CMethodDef cMethods[] = {
-        {"famsaCPP", (DL_FUNC) &famsaCPP, 2},
-        NULL
+       {"famsaCPP", (DL_FUNC) &famsaCPP, 2},
+       NULL
     };
 
     void R_init_famsa(DllInfo *info)
     {
-        R_registerRoutines(info, cMethods, NULL, NULL, NULL);
+       R_registerRoutines(info, cMethods, NULL, NULL, NULL);
     }
 }

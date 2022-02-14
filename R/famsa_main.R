@@ -1,80 +1,65 @@
 #' @export
 famsa <- function(stringset = NULL, help = FALSE, verbose = FALSE,
-                  very_verbose = FALSE, tree = FALSE, distance_matrix = FALSE, advanced_settings = "") {
-  # stringset is an object of class 'XStringSet': DNAStringSet, RNAStringSet, or AAStringSet.
+                  tree = FALSE, distance_matrix = FALSE, advanced_settings = "") {
 
   args <- strsplit(advanced_settings, " ")[[1]]
   argv <- NULL
   if (help) {
-    argv <- append(argv, c("-help"))
+      print("To get help - type help(\"famsa\").")
+      return()
   } else {
-    cl <- class(stringset)
-    if (length(grep("StringSet", cl)) == 0) {
+    ss_class <- class(stringset)
+    if (length(grep("StringSet", ss_class)) == 0) {
       stop("Input must be an object of class XStringSet: DNAStringSet, RNAStringSet, or AAStringSet!\nSee Biostrings: https://bioconductor.org/packages/release/bioc/html/Biostrings.html\n")
     }
 
-    # Get names and sequence order for re-ordering post-algorithm.
     argv <- append(argv, c("famsa"))
-    if (very_verbose) {
-      argv <- append(argv, c("-vv"))
-    } else if (verbose) {
+    if (verbose) {
       argv <- append(argv, c("-v"))
     }
-
 
     sequences_names <- names(stringset)
     if (!tree && !distance_matrix) {
       names(stringset) <- 1:length(stringset)
-      tempOut <- tempfile(fileext = ".fasta")
+      temp_out <- tempfile(fileext = ".fasta")
+    } else if (tree && distance_matrix) {
+        stop("Both tree and distance matrix have been selected as the output!\nUse help(\"famsa\"), to print instruction.")
     } else if (tree) {
       argv <- append(argv, c("-gt_export"))
-      tempOut <- tempfile()
-    } else if (distance_matrix) {
-      argv <- append(argv, c("-dist_export"))
-      tempOut <- tempfile(fileext = ".csv")
+      temp_out <- tempfile()
     } else {
-      print("Error - both tree and distance matrix have been selected as the output!\nSet help=TRUE, to print instruction.")
+      argv <- append(argv, c("-dist_export"))
+      temp_out <- tempfile(fileext = ".csv")
     }
 
     if (length(args) > 0) {
       for (i in 1:length(args)) {
         if (is.logical(args[[i]])) {
-          # arg is a flag.
           argv <- append(argv, as.character(names(args)[i]))
         } else {
-          # arg is an option.
           argv <- append(argv, c(as.character(names(args)[i]), as.character(args[[i]])))
         }
       }
     }
 
-    tempIn <- tempfile(fileext = ".fasta")
-    Biostrings::writeXStringSet(stringset, filepath = tempIn, format = "fasta")
+    temp_in <- tempfile(fileext = ".fasta")
+    Biostrings::writeXStringSet(stringset, filepath = temp_in, format = "fasta")
 
-    # argv <- append(argv,c("famsa", "-gt_export", tempIn, tempOut))
-    # argv <- append(argv,c("famsa", "-dist_export", tempIn, tempOut))
-    # argv <- append(argv,c("famsa", "-dist_export", tempIn, tempOut))
-    # argv <- append(argv,c("famsa", "-help", tempIn, tempOut))
-    argv <- append(argv, c(tempIn, tempOut))
+    argv <- append(argv, c(temp_in, temp_out))
   }
 
 
   nargs <- as.integer(length(argv))
-  # print(nargs)
-  # print(argv)
   .C(.famsaCPP, nargs, as.character(argv))
-  if (help) {
-    return(NULL)
-  }
+
   if (!tree && !distance_matrix) {
     ret <- switch(
             class(stringset),
-            AAStringSet = Biostrings::readAAStringSet(tempOut, format = "fasta"),
-            DNAStringSet = Biostrings::readDNAStringSet(tempOut, format = "fasta"),
-            RNAStringSet = Biostrings::readRNAStringSet(tempOut, format = "fasta")
+            AAStringSet = Biostrings::readAAStringSet(temp_out, format = "fasta"),
+            DNAStringSet = Biostrings::readDNAStringSet(temp_out, format = "fasta"),
+            RNAStringSet = Biostrings::readRNAStringSet(temp_out, format = "fasta")
         )
 
-    # Re-order and re-name output (alphabetical).
     ret <- ret[order(as.integer(names(ret)))]
     names(ret) <- sequences_names
 
@@ -86,15 +71,15 @@ famsa <- function(stringset = NULL, help = FALSE, verbose = FALSE,
         )
 
   } else if (tree) {
-    ret <- phytools::read.newick(tempOut)
+    ret <- phytools::read.newick(temp_out)
   } else {
     ret <- as.dist(
       data.matrix(
-        read.csv(file=tempOut, row.names = 1, header = F, fill=T, col.names=append(sequences_names,NA,))
+        read.csv(file=temp_out, row.names = 1, header = F, fill=T, col.names=append(sequences_names,NA,))
       )
     )
   }
-  file.remove(tempIn, tempOut)
+  file.remove(temp_in, temp_out)
 
   return(ret)
 }

@@ -13,5 +13,7 @@ FAMSA.VC.db
 src/desktop.ini
 .vscode/settings.json
 .Rproj.user
+.RData
+.Rhistory
 src/famsa.dll
 inst/doc

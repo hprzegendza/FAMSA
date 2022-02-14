@@ -1,4 +1,3 @@
 ## -*- mode: makefile; -*-
 CXX_STD = CXX11
-PKG_CXXFLAGS = -mavx -mavx2 
-LIBS=-L./
+PKG_CXXFLAGS = -mavx -mavx2
