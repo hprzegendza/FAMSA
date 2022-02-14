@@ -1,8 +1,8 @@
 ---
-title: "famsa-vignette"
+title: "famsa"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{famsa-vignette}
+  %\VignetteIndexEntry{famsa}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -25,23 +25,24 @@ library(Biostrings)
 ## Usage
 
 ### The simpliest call to the `famsa` function:
-Note that umax is a stringset -- available on start (to be moved to examples...).\
-The returned object will be of type `XMultipleAlignment` (eg. `DNA`, `AA` or `RNAMultipleAlignment`).
+Note that 'inst/examples/exampleAASequence.fasta' is an included example stringset containing Amino Acid sequences of the HBA1 protein in a group of animals sourced from https://www.ncbi.nlm.nih.gov/gene/3039/.
+The returned object will be of type `AAMultipleAlignment` (in case of using DNA or RNA Stringset, the returned type will be `DNA` and `RNA` accordingly).
  
 ```{r, warning = TRUE, error = TRUE, message = TRUE}
-famsa(stringset=umax)
+exampleAAStringSet = Biostrings::readAAStringSet(system.file("extdata", "exampleAA.fasta", package="famsa"), format="fasta")
+famsa(stringset=exampleAAStringSet)
 ```
 
 ### Setting output type to a Distance Matrix
 The type of the returned object will be of a simple data.matrix representing a distance matrix.
 ```{r}
-famsa(stringset=umax, distance_matrix = TRUE)
+famsa(stringset=exampleAAStringSet, distance_matrix = TRUE)
 ```
 
 ## Setting output type to a phylogenetic tree
 The type of the returned object will be of a phylogenetic tree in a Newick format.
-Here it's plotted for better visualisation
-```{r, fig.show='hold'}
-plot(famsa(stringset=umax, tree = TRUE))
-plot(famsa(stringset=umax, tree = TRUE, advanced_settings="-gt upgma"))
+Here it's plotted for better visualization
+```{r, fig.show='hold', fig.width=6, fig.height=4}
+plot(famsa(stringset=exampleAAStringSet, tree = TRUE))
+plot(famsa(stringset=exampleAAStringSet, tree = TRUE, advanced_settings="-gt upgma"))
 ```

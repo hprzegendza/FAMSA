@@ -50,8 +50,6 @@ famsa <- function(stringset = NULL, help = FALSE, verbose = FALSE,
 
 
   nargs <- as.integer(length(argv))
-  ## #' @useDynLib famsa famsaCPP
-  #sda <- function(x, y) .Call(famsaCPP, nargs, as.character(argv))
   .C(.famsaCPP, nargs, as.character(argv))
 
   if (!tree && !distance_matrix) {

@@ -1,12 +1,10 @@
 \name{famsa}
-\alias{famsa}
-\alias{famsa}
 \docType{package}
 \title{
-  Multipla Sequence Alignement using FAMSA
+  MultiplaeSequence Alignment using FAMSA
 }
 \description{
-  FAMSA is a Fast and Accurate Multiple Sequence algorithm for large-scale multiple sequence alignments (400k proteins in 2 hours and     8GB of RAM). Can output aligned sequences in XStringSet as well as a distance matrix and a phylogenic tree in    Newick format.
+  FAMSA is a Fast and Accurate Multiple Sequence algorithm for large-scale multiple sequence alignments (400k proteins in 2 hours and     8GB of RAM). Can output aligned sequences in XStringSet as well as a distance matrix and a phylogenetic  tree in Newick format.
 }
 \details{
     Pass a XStringSet (DNA, RNA or AA) from Biostrings package into the famsa() function to get an aligned sequence set.
